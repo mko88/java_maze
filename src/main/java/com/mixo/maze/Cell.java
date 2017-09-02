@@ -10,8 +10,20 @@ public class Cell {
 	private int y;		
 	private int size;
 	private boolean visited;
+	private boolean inStack;
 	private Graphics g;
 
+	public Cell(int x, int y, int size) {
+		this.x = x;
+		this.y = y;
+		this.size = size;
+		visited = false;
+		inStack = false;
+		walls = new boolean[] {true, true, true, true};
+		this.g = null;
+		
+	}
+	
 	public Cell(Graphics g, int x, int y, int size) {
 		this.x = x;
 		this.y = y;
@@ -22,7 +34,8 @@ public class Cell {
 		draw(Color.WHITE);
 
 	}
-
+	
+	@Deprecated
 	public void draw(Color color) {
 		g.setColor(color);			
 		g.fillRect(x*size, y*size, size + 1, size + 1);
@@ -44,7 +57,40 @@ public class Cell {
 			g.drawLine(x*size + size, y*size, x*size + size, y*size + size);
 		}
 	}
+
+	public void draw(Graphics g) {
+		g.setColor(pickColor());			
+		g.fillRect(x*size, y*size, size + 1, size + 1);
+		g.setColor(Color.BLACK);	
+		if(walls[TOP]) {
+			//0, 0, 0, 20
+			g.drawLine(x*size, y*size, x*size, y*size + size);
+		}
+		if(walls[LEFT]) {
+			//0, 0, 20, 0
+			g.drawLine(x*size, y*size, x*size+size, y*size);
+		}
+		if(walls[RIGHT]) {
+			//0, 20, 20, 20
+			g.drawLine(x*size, y*size + size, x*size + size, y*size + size);
+		}
+		if(walls[BOTTOM]) {
+			//20, 0, 20, 20
+			g.drawLine(x*size + size, y*size, x*size + size, y*size + size);
+		}
+	}
 	
+	private Color pickColor() {
+		if(!visited) {
+			return Color.GRAY;
+		}
+		if(inStack) {
+			return Color.MAGENTA;
+		}
+		return Color.WHITE;
+	}
+	
+	@Deprecated
 	public void drawSmall(Color color) {
 		g.setColor(color);
 		if(size>=9) {
@@ -107,11 +153,14 @@ public class Cell {
 	public String toString() {
 		return "[x=" + x 
 				+" y=" + y
-				+"]";
+				+"]"
+				+" visited=" + visited
+				+" inStack=" + inStack;
 	}
 	
 	private static final int ARROW_PAD = 3;
 	
+	@Deprecated
 	public void drawArrow(int direction) {
 		switch (direction) {
 		case Cell.BOTTOM:
@@ -132,7 +181,7 @@ public class Cell {
 	}
 	
 	/**
-     * Draw an arrow line betwwen two point 
+     * Draw an arrow line between two point 
      * @param g the graphic component
      * @param x1 x-position of first point
      * @param y1 y-position of first point
@@ -161,5 +210,11 @@ public class Cell {
        g.drawLine(x1, y1, x2, y2);
        g.fillPolygon(xpoints, ypoints, 3);
     }
+
+	
+    public void setInStack(boolean isInStack) {
+		inStack = isInStack;
+		
+	}
 
 }
